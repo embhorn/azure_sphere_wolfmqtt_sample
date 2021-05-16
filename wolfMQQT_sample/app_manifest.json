@@ -11,7 +11,7 @@
       "$NETWORK_CONNECTED_LED"
     ],
     "I2cMaster": [ "$I2cMaster2" ],
-    "AllowedConnections": [ "mosquitto.australiaeast.cloudapp.azure.com" ]
+    "AllowedConnections": [ "mosquitto.australiaeast.cloudapp.azure.com", "192.168.86.45", "test.mosquitto.org" ]
   },
   "ApplicationType": "Default"
 }

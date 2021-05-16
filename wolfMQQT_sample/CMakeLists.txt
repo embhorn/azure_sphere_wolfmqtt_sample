@@ -20,32 +20,17 @@ cmake_minimum_required (VERSION 3.10)
 project (AzureSphereAzureIoT C)
 
 azsphere_configure_tools(TOOLS_REVISION "21.01")
-azsphere_configure_api(TARGET_API_SET "7")
-
-add_compile_definitions(DEFAULT_MQTT_HOST="mosquitto.australiaeast.cloudapp.azure.com")
-add_compile_definitions(DEFAULT_MQTT_SECURE_PORT=8884)
-add_compile_definitions(MQTT_CA_CERTIFICATE="certs/ca.crt")
-add_compile_definitions(MQTT_CLIENT_PRIVATE_KEY="certs/client.key")
-add_compile_definitions(MQTT_CLIENT_CERTIFICATE="certs/client.crt")
-
+azsphere_configure_api(TARGET_API_SET "8")
 
 add_subdirectory("../LearningPathLibrary" out)
 
-add_compile_definitions(WOLFMQTT_MULTITHREAD)
-add_compile_definitions(WOLFMQTT_DISCONNECT_CB)
-add_compile_definitions(WOLFMQTT_NONBLOCK)
-add_compile_definitions(WOLFMQTT_NO_STDIO)
-add_compile_definitions(WOLFSSL_USER_SETTINGS)
-# add_compile_definitions(WOLFMQTT_V5)
+
 add_compile_definitions(__linux__)
-add_compile_definitions(MQTT_USE_WOLFSSL)
-add_compile_definitions(ENABLE_MQTT_TLS)
-add_compile_definitions(NO_DH)
 add_compile_definitions(AZURE_SPHERE)
+# wolfSSL settings are defined in user_settings.h
+add_compile_definitions(WOLFSSL_USER_SETTINGS)
+# wolfMQTT settings are defined in user_settings.h
 add_compile_definitions(WOLFMQTT_USER_SETTINGS)
-
-
-
 
 
 set(Source
@@ -59,7 +44,8 @@ set(wolfMQTT
     "wolfMQTT/src/mqtt_packet.c"
     "wolfMQTT/src/mqtt_socket.c"
 
-    "multithread.c"
+    "wolfMQTT/examples/multithread/multithread.c"
+    "wolfMQTT/examples/mqttclient/mqttclient.c"
     "wolfMQTT/examples/mqttexample.c"
     "wolfMQTT/examples/mqttnet.c"
 )
@@ -112,4 +98,4 @@ if (SEEED_STUDIO_MINI)
     azsphere_target_hardware_definition(${PROJECT_NAME} TARGET_DIRECTORY "../HardwareDefinitions/seeed_mt3620_mdb" TARGET_DEFINITION "azure_sphere_learning_path.json")
 endif(SEEED_STUDIO_MINI)
 
-azsphere_target_add_image_package(${PROJECT_NAME} RESOURCE_FILES "certs/ca.crt" "certs/client.key" "certs/client.crt" )
+azsphere_target_add_image_package(${PROJECT_NAME} RESOURCE_FILES "certs/ca-cert.pem" "certs/client-key.pem" "certs/client-cert.pem" )

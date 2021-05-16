@@ -226,9 +226,14 @@ void mqtt_init_ctx(MQTTCtx* mqttCtx)
 {
     XMEMSET(mqttCtx, 0, sizeof(MQTTCtx));
     mqttCtx->host = DEFAULT_MQTT_HOST;
-    mqttCtx->port = DEFAULT_MQTT_SECURE_PORT;
     mqttCtx->qos = DEFAULT_MQTT_QOS;
+#ifdef ENABLE_MQTT_TLS
     mqttCtx->use_tls = 1;
+    mqttCtx->port = DEFAULT_MQTT_SECURE_PORT;
+#else
+    mqttCtx->use_tls = 0;
+    mqttCtx->port = MQTT_DEFAULT_PORT;
+#endif
     mqttCtx->clean_session = 1;
     mqttCtx->keep_alive_sec = DEFAULT_KEEP_ALIVE_SEC;
     mqttCtx->client_id = kDefClientId;
@@ -600,7 +605,7 @@ int mqtt_tls_cb(MqttClient* client) {
     if (client->tls.ctx == NULL) {
         return WOLFSSL_FAILURE;
     }
-
+#if 0
     /* Load root CA certificates full path */
     abs_path = Storage_GetAbsolutePathInImagePackage(MQTT_CA_CERTIFICATE);
     if (abs_path) {
@@ -609,7 +614,7 @@ int mqtt_tls_cb(MqttClient* client) {
             free(abs_path);
             abs_path = NULL;
 
-            //Log_Debug("Error loading CA %s: %d", mTlsCaFile, rc);
+            Log_Debug("Error loading CA %s: %d", mTlsCaFile, rc);
             return rc;
         }
         free(abs_path);
@@ -624,7 +629,7 @@ int mqtt_tls_cb(MqttClient* client) {
 
     ret = wolfSSL_CTX_use_PrivateKey_file(client->tls.ctx, abs_path, WOLFSSL_FILETYPE_PEM);
     if (ret != WOLFSSL_SUCCESS) {
-        Log_Debug("ERROR: failed to private key certificate\n");
+        Log_Debug("ERROR: failed to load private key certificate\n");
         free(abs_path);
         abs_path = NULL;
         return WOLFSSL_FAILURE;
@@ -650,7 +655,7 @@ int mqtt_tls_cb(MqttClient* client) {
 
     free(abs_path);
     abs_path = NULL;
-
+#endif
     return WOLFSSL_SUCCESS;
 }
 

@@ -20,15 +20,36 @@
 #include <time.h>
 
 #include "wolfmqtt/mqtt_client.h"
-#include "multithread.h"
+
+#ifdef WOLFMQTT_MULTITHREAD
+#include "examples/multithread/multithread.h"
+#else
+#include "examples/mqttclient/mqttclient.h"
+#endif
 
 /// <summary>
 ///  Initialize peripherals, device twins, direct methods, timers.
 /// </summary>
 static void InitPeripheralsAndHandlers(void)
 {
-	// call the wolfMQTT sample modified for Azure Sphere
-	sample();
+    MQTTCtx app_mqttCtx;
+
+    /* init defaults */
+    mqtt_init_ctx(&app_mqttCtx);
+
+#ifdef WOLFMQTT_MULTITHREAD
+	// call the wolfMQTT multithread client test
+    app_mqttCtx.app_name = "AzureSphere wolfMQTT multithread client";
+    app_mqttCtx.message = DEFAULT_MESSAGE;
+	app_mqttCtx.test_mode = 1;
+	multithread_test(&app_mqttCtx);
+#else
+	// call the wolfMQTT client test
+    app_mqttCtx.app_name = "AzureSphere wolfMQTT client";
+    app_mqttCtx.message = DEFAULT_MESSAGE;
+	app_mqttCtx.test_mode = 1;
+	mqttclient_test(&app_mqttCtx);
+#endif
 }
 
 /// <summary>
